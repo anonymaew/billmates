@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database/data.db"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String
+  items     Item[]
+  receipts  Receipt[]
+  groups    Group[]
+  payers    Payment[] @relation(name: "Payer")
+  payees    Payment[] @relation(name: "Payee")
+}
+
+model Item {
+  id        String  @id @default(uuid())
+  name      String
+  price     Float
+  payee     User[]
+  receipt   Receipt @relation(fields: [receiptId], references: [id])
+  receiptId String
+}
+
+model Receipt {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  items     Item[]
+  payer     User     @relation(fields: [userId], references: [id])
+  userId    String
+  group     Group   @relation(fields: [groupId], references: [id])
+  groupId   String
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  payer     User     @relation(name: "Payer", fields: [payerId], references: [id])
+  payerId   String
+  payee     User     @relation(name: "Payee", fields: [payeeId], references: [id])
+  payeeId   String
+  amount    Float
+  Group     Group   @relation(fields: [groupId], references: [id])
+  groupId   String
+}
+
+model Group {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String
+  users     User[]
+  receipts  Receipt[]
+  payments  Payment[]
+}

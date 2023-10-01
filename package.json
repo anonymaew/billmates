@@ -8,13 +8,19 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "devDependencies": {
+    "prisma": "^5.3.1"
+  },
   "dependencies": {
+    "@prisma/client": "^5.3.1",
     "@types/node": "20.8.0",
     "@types/react": "18.2.23",
     "@types/react-dom": "18.2.8",
     "next": "13.5.3",
+    "next-superjson-plugin": "^0.5.9",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "superjson": "^1.13.3",
     "typescript": "5.2.2"
   }
 }
