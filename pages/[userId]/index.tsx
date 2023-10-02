@@ -1,14 +1,20 @@
 import { PrismaClient } from '@prisma/client'
+import type { Group, User } from '@prisma/client'
 
-export default ({ user, query }) => {
+export default (
+  props: {
+    user: User & { groups: Group[] },
+    query: { userId: string } 
+  }
+) => {
   return (
     <>
-      <h1>{user.name}</h1>
+      <h1>{props.user.name}</h1>
       <h2>Groups</h2>
       <ul>
-        {user.groups.map((group) => (
+        {props.user.groups.map((group) => (
           <li key={group.id}>
-            <a href={`/${query.userId}/${group.id}`}>{group.name}</a>
+            <a href={`/${props.query.userId}/${group.id}`}>{group.name}</a>
           </li>
         ))}
       </ul>
@@ -16,16 +22,20 @@ export default ({ user, query }) => {
   )
 }
 
-export const getServerSideProps = async ({ query }) => {
+export const getServerSideProps = async (
+  context: {
+    query: { userId: string }
+  }
+) => {
   const prisma = new PrismaClient()
   const user = await prisma.user.findUnique({
-    where: { id: query.userId },
+    where: { id: context.query.userId },
     include: { groups: true },
   })
   return {
     props: {
       user,
-      query,
+      query: context.query,
     },
   }
 }

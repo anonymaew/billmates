@@ -1,33 +1,39 @@
 import { receiptSummary } from '../../../../lib/main';
+import type { Item, Receipt, User } from '@prisma/client';
 
-export default ({ receipt, query }) => {
+export default (
+  props: {
+    receipt: Receipt & { items: (Item & { payee: User[] })[] } & { payer: User } & { group: { users: User[] }},
+    query: { userId: string }
+  }
+) => {
   return (
     <>
       <nav>
         <a href="./">Back</a>
       </nav>
-      <h1>{ receipt.name }</h1>
-      <p>Payed by { receipt.payer.name }</p>
+      <h1>{ props.receipt.name }</h1>
+      <p>Payed by { props.receipt.payer.name }</p>
       <table style={{fontFamily: 'monospace'}} cellSpacing="0" cellPadding="0" >
         <thead>
           <tr>
             <th>Item</th>
             <th>Price</th>
-            { receipt.group.users 
+            { props.receipt.group.users 
               .map(({ name }) =>
               <th key={ name } style={{writingMode: 'vertical-lr', textAlign: 'right' }}>{ name }</th>
             )}
           </tr>
         </thead>
         <tbody>
-          { receipt.items.map((item) => (
+          { props.receipt.items.map((item) => (
             <tr
               key={ item.id }
-              className={ item.payee.some((payee) => payee.id === query.userId) ? 'highlight' : '' }
+              className={ item.payee.some((payee) => payee.id === props.query.userId) ? 'highlight' : '' }
             >
               <td>{ item.name }</td>
               <td align="right" style={{paddingRight: '1ch'}}>{ item.price }</td>
-              { receipt.group.users.map((user) => (
+              { props.receipt.group.users.map((user) => (
                 <td key={ user.id }>
                   { (item.payee.some((payee) => payee.id === user.id)) ? 'X' : ''}
                 </td>
@@ -47,7 +53,7 @@ export default ({ receipt, query }) => {
           */ }
           <tr>
             <td>Total</td>
-            <td>{ receipt.items.reduce((acc, item) => acc + item.price, 0).toFixed(2) }</td>
+            <td>{ props.receipt.items.reduce((acc, item) => acc + item.price, 0).toFixed(2) }</td>
           </tr>
         </tbody>
       </table>
@@ -55,10 +61,16 @@ export default ({ receipt, query }) => {
   );
 };
 
-export const getServerSideProps = async ({ query }) => {
-  console.log(query)
-  const receipt = await receiptSummary(query.userId, query.id)
+export const getServerSideProps = async (
+  context: {
+    query: { userId: string, id: string },
+  }
+) => {
+  const receipt = await receiptSummary(context.query.userId, context.query.id)
   return {
-    props: { receipt, query },
+    props: {
+      receipt,
+      query: context.query,
+    },
   };
 };

@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client'
+import type { Item, Payment, Receipt, User } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export const groupSummary = async (selfId:string, groupId: string) => {
+export const groupSummary = async (selfId: string, groupId: string) => {
   const group = await prisma.group.findUnique({
     where: {
       id: groupId,
@@ -51,14 +52,22 @@ export const groupSummary = async (selfId:string, groupId: string) => {
   }
 }
 
-const calcReceiptSummary = (receipt, selfId) => {
+const calcReceiptSummary = (
+  receipt: Receipt & { items: (Item & { payee: User[] })[] },
+  selfId: string
+) => {
   return Number(receipt.items
     .filter((item) => item.payee.some((user) => user.id === selfId))
     .reduce((acc, item) => acc + item.price / item.payee.length, 0)
     .toFixed(2));
 }
 
-const calcBalanceSummary = (receipts, payments, selfId, userId) => {
+const calcBalanceSummary = (
+  receipts: (Receipt & { items: (Item & { payee: User[] })[] } & { payer: User })[],
+  payments: Payment[],
+  selfId: string,
+  userId: string
+) => {
   return Number((
     receipts
       .filter((receipt) => receipt.payer.id === userId)
@@ -77,7 +86,7 @@ const calcBalanceSummary = (receipts, payments, selfId, userId) => {
 
 
 export const receiptSummary = async (userId:string, receiptId: string) => {
-  const receipt = await prisma.receipt.findUnique({
+  const receipt = await prisma.receipt.findUniqueOrThrow({
     where: {
       id: receiptId,
       group: {

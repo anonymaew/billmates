@@ -1,19 +1,25 @@
 import { groupSummary } from '../../../lib/main';
+import type { Group, Item, Receipt, User } from '@prisma/client';
 
-export default ({ group, query }) => {
+export default (
+  props: {
+    group: Group & { users: (User & { balance?: number })[] } & { receipts: (Receipt & { items?: (Item & { payee: User[] })[] } & { owed: number })[] },
+    query: { userId: string, groupId: string },
+  }
+) => {
   return (
     <>
-      <h1>{ group.name }</h1>
+      <h1>{ props.group.name }</h1>
       <h2>Users</h2>
       <ul>
-      { group.users.map(user =>
+      { props.group.users.map(user =>
         <li key={user.id}>
           {user.name}
           {user.balance ?
             (user.balance > 0 ?
               <>
                 - You <span style={{color: 'red'}}>owed {user.balance}</span>.&nbsp;
-                <a href={`/${query.userId}/${query.groupId}/payment?to=${user.id}&amount=${user.balance}`}>
+                <a href={`/${props.query.userId}/${props.query.groupId}/payment?to=${user.id}&amount=${user.balance}`}>
                   Pay now
                 </a>
               </> :
@@ -27,9 +33,9 @@ export default ({ group, query }) => {
       </ul>
       <h2>Receipts</h2>
       <ul>
-      { group.receipts.map(receipt =>
+      { props.group.receipts.map(receipt =>
         <li key={receipt.id}>
-          <a href={`/${query.userId}/${query.groupId}/receipt?id=${receipt.id}`}>{receipt.name} - {receipt.owed}</a>
+          <a href={`/${props.query.userId}/${props.query.groupId}/receipt?id=${receipt.id}`}>{receipt.name} - {receipt.owed}</a>
         </li>
       ) }
       </ul>
@@ -37,12 +43,16 @@ export default ({ group, query }) => {
   );
 };
 
-export const getServerSideProps = async ({ query }) => {
-  const group = await groupSummary(query.userId, query.groupId)
+export const getServerSideProps = async (
+  context: {
+    query: { userId: string, groupId: string },
+  }
+) => {
+  const group = await groupSummary(context.query.userId, context.query.groupId)
   return {
     props: {
       group,
-      query,
+      query: context.query,
     },
   };
 };
