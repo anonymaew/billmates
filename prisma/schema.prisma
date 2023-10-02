@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String    @id @default(nanoid(6))
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   name      String
@@ -23,7 +23,7 @@ model User {
 }
 
 model Item {
-  id        String  @id @default(uuid())
+  id        String  @id @default(nanoid(6))
   name      String
   price     Float
   payee     User[]
@@ -32,7 +32,7 @@ model Item {
 }
 
 model Receipt {
-  id        String   @id @default(uuid())
+  id        String   @id @default(nanoid(6))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String
@@ -44,7 +44,7 @@ model Receipt {
 }
 
 model Payment {
-  id        String   @id @default(uuid())
+  id        String   @id @default(nanoid(6))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   payer     User     @relation(name: "Payer", fields: [payerId], references: [id])
@@ -57,7 +57,7 @@ model Payment {
 }
 
 model Group {
-  id        String    @id @default(uuid())
+  id        String    @id @default(nanoid(6))
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   name      String
