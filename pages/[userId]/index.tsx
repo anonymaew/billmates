@@ -7,6 +7,9 @@ export default (
     query: { userId: string } 
   }
 ) => {
+  if (!props.user)
+    return <></>;
+
   return (
     <>
       <h1>{props.user.name}</h1>

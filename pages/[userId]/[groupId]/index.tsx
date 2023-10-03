@@ -7,6 +7,9 @@ export default (
     query: { userId: string, groupId: string },
   }
 ) => {
+  if (!props)
+    return <></>;
+
   return (
     <>
       <h1>{ props.group.name }</h1>
@@ -33,6 +36,23 @@ export default (
       </ul>
       <h2>Receipts</h2>
       <ul>
+        <li>
+        <form
+          method="post"
+          action="/api/create/receipt"
+        >
+          <input type="hidden" name="selfId" value={props.query.userId}/>
+          <input type="hidden" name="groupId" value={props.query.groupId}/>
+          <input type="text" name="name" placeholder="seller name" required/>
+          <select name="payerId" defaultValue={props.query.userId}>
+            { props.group.users.map(user =>
+              <option key={user.id} value={user.id}>{user.name}</option>
+            ) }
+          </select>
+          <input type="date" name="createdAt"/>
+          <input type="submit" value="Add" />
+          </form>
+        </li>
       { props.group.receipts.map(receipt =>
         <li key={receipt.id}>
           <a href={`/${props.query.userId}/${props.query.groupId}/receipt?id=${receipt.id}`}>{receipt.name} - {receipt.owed}</a>
