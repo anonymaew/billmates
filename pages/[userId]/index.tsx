@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import type { Group, User } from '@prisma/client'
+import Layout from '../../components/layout'
 
 export default (
   props: {
@@ -11,7 +12,7 @@ export default (
     return <></>;
 
   return (
-    <>
+    <Layout>
       <h1>{props.user.name}</h1>
       <h2>Groups</h2>
       <ul>
@@ -21,7 +22,7 @@ export default (
           </li>
         ))}
       </ul>
-    </>
+    </Layout>
   )
 }
 

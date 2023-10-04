@@ -1,32 +1,58 @@
+:root {
+  --accent-color: #4ade80;
+  --accent-color-light: #bbf7d0;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #f4f4f5;
+  color: #18181b;
+  min-height: 100vh;
 }
-
 a {
   color: inherit;
-  /* text-decoration: none; */
 }
-
 * {
   box-sizing: border-box;
 }
+nav {
+  background-color: var(--accent-color);
+  padding: 1rem;
+}
+
+.ma {
+  margin: auto;
+}
+.f {
+  display: flex;
+}
+.jcc {
+  justify-content: center;
+}
+.jcsb {
+  justify-content: space-between;
+}
 
 th,td {
-  padding: 0.2rem 0.5rem;
+  padding: 0.3rem;
 }
 tr {
-  background-color: #fafafa;
+  background-color: #e4e4e7;
 }
 tr:nth-child(odd) {
   filter: brightness(0.9);
 }
 
 .highlight {
-  background-color: #fef3c7;
+  background-color: var(--accent-color-light);
+}
+.insignificant {
+  color: grey;
+  font-size: 0.8rem;
 }
 
 input[type='text']{
@@ -34,4 +60,23 @@ input[type='text']{
 }
 input[type='number'] {
   width: 4rem;
+}
+
+.layout {
+  max-width: 540px;
+  padding: 0 1rem;
+  margin: auto;
+}
+
+ul {
+  padding: 0;
+}
+li {
+  background-color: #e4e4e7;
+  border-radius: 0.3rem;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+}
+li::marker {
+  content: '';
 }

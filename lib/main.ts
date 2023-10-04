@@ -3,6 +3,12 @@ import type { Item, Payment, Receipt, User } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+export type ReceiptDetail = Receipt & {
+  items: (Item & { payee: User[] })[],
+  payer: User,
+  owed: number,
+}
+
 export const groupSummary = async (selfId: string, groupId: string) => {
   const group = await prisma.group.findUnique({
     where: {
@@ -84,7 +90,6 @@ const calcBalanceSummary = (
   ).toFixed(2));
 }
 
-
 export const receiptSummary = async (userId:string, receiptId: string) => {
   const receipt = await prisma.receipt.findUniqueOrThrow({
     where: {
@@ -113,7 +118,3 @@ export const receiptSummary = async (userId:string, receiptId: string) => {
     owed: calcReceiptSummary(receipt, userId),
   }
 }
-
-// const data = await groupSummary('07e95dc6-a3b9-4cd3-be73-74b78313659e', 'ad75b33a-70bb-4f17-9cdc-92b7b15f8625')
-// const data = await receiptSummary('07e95dc6-a3b9-4cd3-be73-74b78313659e', '35a29f91-2734-4085-bc4f-612e9e048448')
-// console.log(JSON.stringify(data, null, 2))
